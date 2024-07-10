@@ -1,4 +1,5 @@
-<html><head><base href="https://goldenhours.websim.ai" />
+<html>
+<head>
 <title>Golden Hour Egg Cracker</title>
 <style>
   body {
@@ -227,13 +228,33 @@
 
   #clickCounter {
     position: fixed;
-    bottom: 20px;
+    bottom: 60px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 24px;
     color: #ffffff;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     z-index: 1000;
+  }
+
+  #screenshotButton {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #ffd700;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10000; /* Ensure it is always on top */
+  }
+
+  #screenshotButton:hover {
+    background-color: #ffaa00;
   }
 </style>
 </head>
@@ -244,14 +265,17 @@
     <div id="yolkCenter"></div>
   </button>
   <div id="clickCounter">Total Clicks: 0</div>
+  <button id="screenshotButton">Grab CEGGshot</button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script>
     const button = document.getElementById('clickButton');
     const particles = document.querySelector('.particles');
     const cursor = document.getElementById('cursor');
     const yolkCenter = document.getElementById('yolkCenter');
     const clickCounter = document.getElementById('clickCounter');
+    const screenshotButton = document.getElementById('screenshotButton');
     let clicks = 0;
     let totalClicks = 0;
     let isOverButton = false;
@@ -420,7 +444,7 @@
       document.body.appendChild(yolk);
 
       const buttonRect = button.getBoundingClientRect();
-      yolk.style.left = `${buttonRect.left + buttonRect.width / 2 - 20}px`;
+      yolk.style.left= `${buttonRect.left + buttonRect.width / 2 - 20}px`;
       yolk.style.top = `${buttonRect.top + buttonRect.height / 2 - 20}px`;
 
       setTimeout(() => {
@@ -599,5 +623,36 @@
     document.body.addEventListener('click', () => {
       Tone.start();
     }, { once: true });
+
+    // Screenshot functionality
+    screenshotButton.addEventListener('click', () => {
+      html2canvas(document.body).then(canvas => {
+        const ctx = canvas.getContext('2d');
+        
+        // Add CEGG and total clicks text
+        ctx.font = 'bold 48px Arial';
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        const text = `CEGG: ${totalClicks}`;
+        const x = canvas.width / 2;
+        const y = canvas.height / 2;
+        
+        ctx.strokeText(text, x, y);
+        ctx.fillText(text, x, y);
+        
+        // Convert canvas to image and download
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = 'CEGGshot.png';
+        link.click();
+      });
+    });
   </script>
-</body></html>
+</body>
+</html>
+
