@@ -1,0 +1,603 @@
+<html><head><base href="https://goldenhours.websim.ai" />
+<title>Golden Hour Egg Cracker</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(45deg, #FF9966, #FF5E62);
+    overflow: hidden;
+    cursor: none;
+  }
+  
+  #clickButton {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #ffd700, #ffa500);
+    box-shadow: 0 0 30px #d4af37;
+    border: none;
+    outline: none;
+    cursor: none;
+    position: relative;
+    overflow: hidden;
+    animation: pulse 2s infinite;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 30px #d4af37;
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 50px #d4af37;
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 30px #d4af37;
+    }
+  }
+  
+  #clickButton:before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 20%, rgba(255,255,255,0) 70%);
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.6s, opacity 0.6s;
+  }
+  
+  #clickButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 60px #ffd700;
+  }
+  
+  #clickButton:hover:before {
+    transform: scale(1);
+    opacity: 1;
+  }
+  
+  #clickButton:active {
+    transform: scale(0.95);
+    box-shadow: 10px 10px 30px #d4af37, -10px -10px 30px #fff700;
+  }
+  
+  .crack {
+    position: absolute;
+    background: #333;
+    height: 2px;
+    width: 0;
+    transform-origin: left center;
+    transition: width 0.3s ease-out;
+  }
+
+  .yolk-fill {
+    position: absolute;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #ffdc00, #ffa600);
+    transition: width 0.5s ease-out;
+  }
+  
+  .particles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    height: 400px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  
+  .particle {
+    position: absolute;
+    background: radial-gradient(circle, #ffd700 0%, rgba(255,215,0,0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+  }
+  
+  @keyframes particleAnimation {
+    0% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translate(var(--tx), var(--ty)) scale(0.2);
+      opacity: 0;
+    }
+  }
+
+  #cursor {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffd700 0%, #ffaa00 100%);
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ffd700;
+    transition: width 0.3s, height 0.3s, transform 0.1s, background 0.3s;
+  }
+
+  .egg-shell {
+    position: absolute;
+    width: 30px;
+    height: 40px;
+    background: #f0f0f0;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    opacity: 0.7;
+    animation: fall 10s linear infinite;
+    cursor: pointer;
+  }
+
+  .egg-shell:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle at 30% 40%, #e0e0e0 1px, transparent 1px),
+      radial-gradient(circle at 70% 60%, #e0e0e0 1px, transparent 1px),
+      radial-gradient(circle at 50% 50%, #e0e0e0 1px, transparent 1px);
+    background-size: 10px 10px;
+    border-radius: inherit;
+  }
+
+  @keyframes fall {
+    0% {
+      transform: translateY(-100vh) rotate(0deg);
+    }
+    100% {
+      transform: translateY(100vh) rotate(720deg);
+    }
+  }
+
+  @keyframes rise {
+    0% {
+      transform: translateY(100vh) rotate(720deg);
+    }
+    100% {
+      transform: translateY(-100vh) rotate(0deg);
+    }
+  }
+
+  .yolk {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, #ffdc00 60%, #ffa600);
+    border-radius: 50%;
+    opacity: 1;
+    transition: all 0.3s ease-out;
+    cursor: pointer;
+  }
+
+  @keyframes yolkFly {
+    0% {
+      transform: translate(0, 0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--tx), var(--ty)) scale(0.5);
+      opacity: 0;
+    }
+  }
+
+  #yolkCenter {
+    position: absolute;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, #ffdc00 60%, #ffa600);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.5s ease-out;
+  }
+
+  @keyframes breakOpen {
+    0% {
+      clip-path: circle(50% at 50% 50%);
+    }
+    100% {
+      clip-path: circle(0% at 50% 50%);
+    }
+  }
+
+  @keyframes newEggAppear {
+    0% {
+      transform: scale(0) rotate(0deg);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1) rotate(720deg);
+      opacity: 1;
+    }
+  }
+
+  #clickCounter {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+</style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div class="particles"></div>
+  <button id="clickButton">
+    <div id="yolkCenter"></div>
+  </button>
+  <div id="clickCounter">Total Clicks: 0</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script>
+    const button = document.getElementById('clickButton');
+    const particles = document.querySelector('.particles');
+    const cursor = document.getElementById('cursor');
+    const yolkCenter = document.getElementById('yolkCenter');
+    const clickCounter = document.getElementById('clickCounter');
+    let clicks = 0;
+    let totalClicks = 0;
+    let isOverButton = false;
+
+    // Set up Tone.js
+    const clickPlayer = new Tone.Player({
+      url: "https://cdn.freesound.org/previews/240/240776_4107740-lq.mp3",
+      autostart: false,
+      volume: -10
+    }).toDestination();
+
+    const squishPlayer = new Tone.Player({
+      url: "https://cdn.freesound.org/previews/66/66136_931236-lq.mp3",
+      autostart: false,
+      volume: -10
+    }).toDestination();
+
+    const yolkClickPlayer = new Tone.Player({
+      url: "https://cdn.freesound.org/previews/147/147788_2614950-lq.mp3",
+      autostart: false,
+      volume: -5
+    }).toDestination();
+
+    const popPlayer = new Tone.Player({
+      url: "https://cdn.freesound.org/previews/478/478187_4999087-lq.mp3",
+      autostart: false,
+      volume: -5
+    }).toDestination();
+
+    // Calm background music
+    const backgroundSynth = new Tone.PolySynth(Tone.Synth).toDestination();
+    backgroundSynth.volume.value = -20;
+
+    const reverb = new Tone.Reverb({
+      decay: 5,
+      wet: 0.5
+    }).toDestination();
+
+    backgroundSynth.connect(reverb);
+
+    const backgroundPattern = new Tone.Pattern((time, note) => {
+      backgroundSynth.triggerAttackRelease(note, "4n", time);
+    }, ["C4", "E4", "G4", "B4", "A4", "F4", "D4"], "upDown");
+
+    Tone.Transport.bpm.value = 60;
+    Tone.Transport.start();
+    backgroundPattern.start(0);
+
+    button.addEventListener('click', function(e) {
+      clicks++;
+      totalClicks++;
+      updateClickCounter();
+      
+      // Play the click sound
+      clickPlayer.start();
+      
+      // Create cracks
+      createCracks(e);
+      
+      createParticles(e);
+
+      // Create yolks
+      const yolkCount = Math.floor(clicks / 10) + 1;
+      for (let i = 0; i < yolkCount; i++) {
+        createYolk(e);
+      }
+
+      // Update center yolk
+      updateCenterYolk();
+
+      // Fill cracks with yolk if over button
+      if (isOverButton) {
+        fillCracksWithYolk();
+      }
+
+      // Break open after 100 clicks
+      if (clicks >= 100) {
+        breakOpen();
+      }
+
+      // Create egg shells at higher rate after 100 clicks
+      if (clicks >= 100) {
+        const shellCount = Math.floor((clicks - 100) / 10) + 1;
+        for (let i = 0; i < shellCount; i++) {
+          setTimeout(() => createEggShell(true), i * 100);
+        }
+      }
+    });
+
+    function createCracks(e) {
+      const numCracks = 3 + Math.floor(Math.random() * 3);
+      const buttonRect = button.getBoundingClientRect();
+      const centerX = buttonRect.width / 2;
+      const centerY = buttonRect.height / 2;
+      
+      for (let i = 0; i < numCracks; i++) {
+        const crack = document.createElement('div');
+        crack.classList.add('crack');
+        
+        const angle = Math.random() * 360;
+        const length = 20 + Math.random() * 60;
+        
+        crack.style.width = '0px';
+        crack.style.left = `${centerX}px`;
+        crack.style.top = `${centerY}px`;
+        crack.style.transform = `rotate(${angle}deg)`;
+        
+        const yolkFill = document.createElement('div');
+        yolkFill.classList.add('yolk-fill');
+        crack.appendChild(yolkFill);
+        
+        button.appendChild(crack);
+        
+        setTimeout(() => {
+          crack.style.width = `${length}px`;
+        }, 50);
+      }
+
+      // Gradually change button color to simulate egg white
+      const colorChange = Math.min(clicks * 2, 100);
+      button.style.background = `linear-gradient(145deg, 
+        rgba(255, 215, 0, ${1 - colorChange/100}), 
+        rgba(255, 165, 0, ${1 - colorChange/100}), 
+        rgba(255, 255, 255, ${colorChange/100}))`;
+    }
+
+    function createParticles(e) {
+      let rect = particles.getBoundingClientRect();
+      let x = e.clientX - rect.left;
+      let y = e.clientY - rect.top;
+      
+      for (let i = 0; i < 3; i++) {
+        let particle = document.createElement('div');
+        particle.classList.add('particle');
+        particles.appendChild(particle);
+
+        let size = Math.random() * 100 + 50;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        let angle = Math.random() * Math.PI * 2;
+        let radius = Math.random() * 100 + 150;
+        let startX = 200 + Math.cos(angle) * radius;
+        let startY = 200 + Math.sin(angle) * radius;
+        
+        particle.style.left = `${startX}px`;
+        particle.style.top = `${startY}px`;
+
+        let destinationX = 200 + (Math.random() - 0.5) * 2 * 200;
+        let destinationY = 200 + (Math.random() - 0.5) * 2 * 200;
+
+        particle.style.setProperty('--tx', `${destinationX - startX}px`);
+        particle.style.setProperty('--ty', `${destinationY - startY}px`);
+        
+        particle.style.animation = `particleAnimation ${Math.random() * 2 + 1}s linear`;
+
+        particle.addEventListener('animationend', () => {
+          particle.remove();
+        });
+      }
+    }
+
+    function createYolk(e) {
+      const yolk = document.createElement('div');
+      yolk.classList.add('yolk');
+      document.body.appendChild(yolk);
+
+      const buttonRect = button.getBoundingClientRect();
+      yolk.style.left = `${buttonRect.left + buttonRect.width / 2 - 20}px`;
+      yolk.style.top = `${buttonRect.top + buttonRect.height / 2 - 20}px`;
+
+      setTimeout(() => {
+        yolk.style.opacity = '1';
+        
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 300 + Math.random() * 200;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+
+        yolk.style.setProperty('--tx', `${tx}px`);
+        yolk.style.setProperty('--ty', `${ty}px`);
+        yolk.style.animation = 'yolkFly 1s ease-out';
+
+        yolk.addEventListener('animationend', () => {
+          yolk.remove();
+        });
+      }, 50);
+
+      yolk.addEventListener('click', () => {
+        totalClicks++;
+        updateClickCounter();
+        popPlayer.start();
+        yolk.style.animation = 'yolkFly 0.5s ease-out forwards';
+        setTimeout(() => {
+          yolk.remove();
+        }, 500);
+      });
+    }
+
+    function updateCenterYolk() {
+      if (clicks >= 50) {
+        const size = Math.min((clicks - 50) / 2, 100);
+        yolkCenter.style.width = `${size}px`;
+        yolkCenter.style.height = `${size}px`;
+      }
+
+      if (clicks % 50 === 0 && clicks >= 50) {
+        const burstCount = clicks / 50;
+        for (let i = 0; i < burstCount * 5; i++) {
+          setTimeout(() => createYolk({ clientX: button.offsetLeft + button.offsetWidth / 2, clientY: button.offsetTop + button.offsetHeight / 2 }), i * 100);
+        }
+      }
+    }
+
+    function fillCracksWithYolk() {
+      const cracks = document.querySelectorAll('.crack');
+      cracks.forEach((crack) => {
+        const yolkFill = crack.querySelector('.yolk-fill');
+        yolkFill.style.width = '100%';
+      });
+    }
+
+    function breakOpen() {
+      button.style.animation = 'breakOpen 1s forwards';
+      yolkCenter.style.animation = 'breakOpen 1s forwards';
+
+      // Wait 5 seconds and generate a new egg
+      setTimeout(() => {
+        regenerateEgg();
+      }, 5000);
+    }
+
+    function regenerateEgg() {
+      // Reset button styles and animations
+      button.style.animation = 'newEggAppear 1s forwards';
+      button.style.background = 'linear-gradient(145deg,#ffd700, #ffa500)';
+      yolkCenter.style.animation = 'none';
+      yolkCenter.style.width = '0';
+      yolkCenter.style.height = '0';
+
+      // Remove all cracks
+      const cracks = button.querySelectorAll('.crack');
+      cracks.forEach(crack => crack.remove());
+
+      // Reset click count
+      clicks = 0;
+
+      // Add a celebratory burst of particles
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => createParticles({
+          clientX: button.offsetLeft + button.offsetWidth / 2,
+          clientY: button.offsetTop + button.offsetHeight / 2
+        }), i * 50);
+      }
+    }
+
+    // Custom cursor
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    button.addEventListener('mouseenter', () => {
+      cursor.style.width = '30px';
+      cursor.style.height = '30px';
+      cursor.style.transform = 'translate(-5px, -5px)';
+      cursor.style.background = 'radial-gradient(circle, #ffd700 0%, #ffaa00 100%)';
+      isOverButton = true;
+    });
+
+    button.addEventListener('mouseleave', () => {
+      cursor.style.width = '20px';
+      cursor.style.height = '20px';
+      cursor.style.transform = 'translate(0, 0)';
+      cursor.style.background = '#ffffff';
+      isOverButton = false;
+    });
+
+    // Egg shell background
+    function createEggShell(fromButton = false) {
+      const eggShell = document.createElement('div');
+      eggShell.classList.add('egg-shell');
+      if (fromButton) {
+        const buttonRect = button.getBoundingClientRect();
+        eggShell.style.left = `${buttonRect.left + buttonRect.width / 2}px`;
+        eggShell.style.top = `${buttonRect.top + buttonRect.height / 2}px`;
+      } else {
+        eggShell.style.left = Math.random() * 100 + 'vw';
+      }
+      eggShell.style.animationDuration = Math.random() * 5 + 5 + 's';
+      document.body.appendChild(eggShell);
+
+      let clickCount = 0;
+      eggShell.addEventListener('click', (e) => {
+        totalClicks++;
+        updateClickCounter();
+        clickPlayer.start();
+        clickCount++;
+        
+        if (clickCount === 1) {
+          reverseEggShell(eggShell);
+        } else if (clickCount === 2) {
+          turnIntoYolk(eggShell, e);
+        }
+      });
+
+      setTimeout(() => {
+        eggShell.remove();
+      }, 10000);
+    }
+
+    function reverseEggShell(eggShell) {
+      eggShell.style.animationName = 'rise';
+      eggShell.style.animationPlayState = 'running';
+    }
+
+    function turnIntoYolk(eggShell, e) {
+      const yolk = document.createElement('div');
+      yolk.classList.add('yolk');
+      yolk.style.left = e.clientX - 20 + 'px';
+      yolk.style.top = e.clientY - 20 + 'px';
+      yolk.style.opacity = '1';
+      document.body.appendChild(yolk);
+
+      eggShell.remove();
+
+      yolk.addEventListener('click', () => {
+        totalClicks++;
+        updateClickCounter();
+        popPlayer.start();
+        yolk.style.animation = 'yolkFly 0.5s ease-out forwards';
+        setTimeout(() => {
+          yolk.remove();
+        }, 500);
+      });
+    }
+
+    function updateClickCounter() {
+      clickCounter.textContent = `Total Clicks: ${totalClicks}`;
+    }
+
+    setInterval(createEggShell, 300);
+
+    // Start audio context on first user interaction
+    document.body.addEventListener('click', () => {
+      Tone.start();
+    }, { once: true });
+  </script>
+</body></html>
