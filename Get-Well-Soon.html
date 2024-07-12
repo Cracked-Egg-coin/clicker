@@ -1,0 +1,458 @@
+<html><head><base href="https://getwellsoonapp.com"/><title>Get Well Soon Leon and Georgia: Beat the Fever</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f8ff;
+  color: #333;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+  overflow: hidden;
+  transition: background-color 1s ease;
+}
+h1 {
+  color: #ff6b6b;
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 2;
+}
+.game-container {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 1;
+}
+.thermometer {
+  width: 40px;
+  height: 200px;
+  background: linear-gradient(to top, #4ecdc4 0%, #ff6b6b 100%);
+  margin: 20px auto;
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: background 1s ease;
+}
+.mercury {
+  width: 100%;
+  background-color: #ff6b6b;
+  position: absolute;
+  bottom: 0;
+  transition: height 0.5s ease-in-out, background-color 1s ease;
+}
+button {
+  background-color: #4ecdc4;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+button:hover {
+  background-color: #45b7aa;
+}
+.stats {
+  margin-top: 20px;
+  font-size: 1.2em;
+}
+#toast {
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #ffc0cb;
+  color: #00008b;
+  text-align: center;
+  border-radius: 8px;
+  padding: 16px;
+  position: fixed;
+  z-index: 3;
+  left: 50%;
+  top: 30px;
+  transform: translateX(-50%);
+  font-size: 17px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+#toast.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s;
+  animation: fadein 0.5s;
+}
+@-webkit-keyframes fadein {
+  from {top: 0; opacity: 0;} 
+  to {top: 30px; opacity: 1;}
+}
+@keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 30px; opacity: 1;}
+}
+.background-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: pulse 2s ease-out;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+.star {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 20px solid yellow;
+  opacity: 0;
+  animation: twinkle 1.5s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+.heart {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #ff6b6b;
+  transform: rotate(-45deg);
+  opacity: 0;
+  animation: float 3s ease-in-out infinite;
+}
+.heart::before,
+.heart::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background-color: #ff6b6b;
+  border-radius: 50%;
+  position: absolute;
+}
+.heart::before {
+  top: -10px;
+  left: 0;
+}
+.heart::after {
+  top: 0;
+  left: 10px;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-45deg) scale(1); opacity: 0; }
+  50% { transform: translateY(-20px) rotate(-45deg) scale(1.1); opacity: 1; }
+}
+.rainbow {
+  position: absolute;
+  width: 150px;
+  height: 75px;
+  border-radius: 75px 75px 0 0;
+  background: linear-gradient(
+    to bottom,
+    violet, indigo, blue, green, yellow, orange, red
+  );
+  opacity: 0;
+  animation: appear 2s ease-in-out;
+}
+@keyframes appear {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 0.7; transform: scale(1); }
+}
+.firework {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  animation: explode 1s ease-out forwards;
+}
+@keyframes explode {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(30); opacity: 0; }
+}
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+  animation: rise 4s ease-in infinite;
+}
+@keyframes rise {
+  0% { transform: translateY(100vh) scale(0); opacity: 1; }
+  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+.lightning {
+  position: absolute;
+  width: 2px;
+  height: 100px;
+  background-color: #fff;
+  opacity: 0;
+  filter: blur(1px);
+  animation: strike 0.5s ease-out;
+}
+@keyframes strike {
+  0% { opacity: 0; transform: scaleY(0); }
+  10% { opacity: 1; }
+  100% { opacity: 0; transform: scaleY(1); }
+}
+#getWellAgainButton {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  z-index: 4;
+  background-color: #ff6b6b;
+}
+#getWellAgainButton:hover {
+  background-color: #ff8c8c;
+}
+@keyframes rainbow {
+  0% { background-color: violet; }
+  16.67% { background-color: indigo; }
+  33.33% { background-color: blue; }
+  50% { background-color: green; }
+  66.67% { background-color: yellow; }
+  83.33% { background-color: orange; }
+  100% { background-color: red; }
+}
+</style></head><body>
+<div class="background-animation" id="backgroundAnimation"></div>
+<div id="toast"></div>
+<h1>Get Well Soon Leon and Georgia: Beat the Fever</h1>
+<div class="game-container">
+  <p>Tap to reduce the fever and help Leon and Georgia get well soon!</p>
+  <div class="thermometer"><div class="mercury" id="mercury"></div></div>
+  <button onclick="giveCare()">Give Care</button>
+  <div class="stats">
+    <p>Fever: <span id="fever">38.5°C</span></p>
+    <p>Cares Given: <span id="cares">0</span></p>
+    <p>Time to Recovery: <span id="time">2:00</span></p>
+  </div>
+</div>
+<button id="getWellAgainButton" onclick="restartGame()">Get Well Again</button>
+<script>
+let fever = 38.5;
+let caresGiven = 0;
+let timeLeft = 120;
+let timerInterval;
+let recoveryAnimationInterval;
+let rainbowInterval;
+let isRecovering = false;
+let isGameFinished = false;
+
+// Create an audio context
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+// Define a scale for our tune
+const scale = [262, 294, 330, 349, 392, 440, 494, 523]; // C major scale frequencies
+
+function giveCare() {
+  caresGiven++;
+  updateStats();
+  createHeartAnimation();
+  playRandomNote();
+  if (!isRecovering && fever > 36.5) {
+    fever -= 0.1;
+    createBackgroundAnimation();
+  }
+  if (fever <= 36.5 && !isRecovering) {
+    isRecovering = true;
+    showToast("Congratulations! Leon and Georgia's fever is gone. Keep giving care to speed up recovery!");
+    startRecoveryTimer();
+    startRecoveryAnimation();
+  }
+}
+
+function playRandomNote() {
+  // Create an oscillator
+  const oscillator = audioContext.createOscillator();
+  oscillator.type = 'sine';
+  
+  // Choose a random frequency from our scale
+  const randomFrequency = scale[Math.floor(Math.random() * scale.length)];
+  oscillator.frequency.setValueAtTime(randomFrequency, audioContext.currentTime);
+
+  // Create a gain node for volume control
+  const gainNode = audioContext.createGain();
+  gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+  // Connect the oscillator to the gain node, and the gain node to the audio output
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  // Start and stop the oscillator
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + 0.5);
+}
+
+function updateStats() {
+  document.getElementById('fever').textContent = fever.toFixed(1) + '°C';
+  document.getElementById('cares').textContent = caresGiven;
+  document.getElementById('mercury').style.height = ((fever - 35) / 5) * 100 + '%';
+}
+
+function startRecoveryTimer() {
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+    document.getElementById('time').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      clearInterval(recoveryAnimationInterval);
+      isGameFinished = true;
+      showToast("Leon and Georgia have fully recovered! Thanks for playing Get Well Soon!");
+      startHeartFlood();
+      document.body.style.backgroundColor = '#f0e68c'; // Mellow Yellow
+      startRainbowThermometer();
+      setTimeout(() => {
+        document.getElementById('getWellAgainButton').style.display = 'block';
+      }, 5000);
+    }
+  }, 1000);
+}
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.className = "show";
+  setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 10000);
+}
+
+function createBackgroundAnimation() {
+  const animation = document.getElementById('backgroundAnimation');
+  const shapes = ['circle', 'star', 'rainbow', 'firework', 'bubble', 'lightning'];
+  const shape = shapes[Math.floor(Math.random() * shapes.length)];
+  const element = document.createElement('div');
+  element.classList.add(shape);
+  
+  const size = Math.random() * 50 + 20;
+  const x = Math.random() * window.innerWidth;
+  const y = Math.random() * window.innerHeight;
+  
+  element.style.width = `${size}px`;
+  element.style.height = `${size}px`;
+  element.style.left = `${x}px`;
+  element.style.top = `${y}px`;
+  
+  if (['circle', 'firework', 'bubble'].includes(shape)) {
+    element.style.backgroundColor = getRandomColor();
+  }
+  
+  if (shape === 'lightning') {
+    element.style.transform = `rotate(${Math.random() * 360}deg)`;
+  }
+  
+  animation.appendChild(element);
+  
+  setTimeout(() => {
+    animation.removeChild(element);
+  }, 4000);
+}
+
+function createHeartAnimation() {
+  const animation = document.getElementById('backgroundAnimation');
+  const heart = document.createElement('div');
+  heart.classList.add('heart');
+  
+  const size = Math.random() * 20 + 10; // Smaller size range
+  const x = Math.random() * window.innerWidth;
+  const y = Math.random() * window.innerHeight;
+  
+  heart.style.width = `${size}px`;
+  heart.style.height = `${size}px`;
+  
+  // Adjust position to account for rotation and pseudo-elements
+  heart.style.left = `${x - size / 2}px`;
+  heart.style.top = `${y - size / 2}px`;
+  
+  animation.appendChild(heart);
+  
+  setTimeout(() => {
+    animation.removeChild(heart);
+  }, 3000);
+}
+
+function getRandomColor() {
+  const hue = Math.floor(Math.random() * 360);
+  return `hsla(${hue}, 100%, 50%, 0.3)`;
+}
+
+function startRecoveryAnimation() {
+  recoveryAnimationInterval = setInterval(() => {
+    for (let i = 0; i < 5; i++) {
+      createBackgroundAnimation();
+    }
+  }, 300);
+}
+
+function startHeartFlood() {
+  const heartFloodInterval = setInterval(() => {
+    for (let i = 0; i < 20; i++) {
+      createHeartAnimation();
+    }
+  }, 100);
+
+  setTimeout(() => {
+    clearInterval(heartFloodInterval);
+  }, 5000);
+}
+
+function startRainbowThermometer() {
+  const thermometer = document.querySelector('.thermometer');
+  const mercury = document.getElementById('mercury');
+  let rainbowIndex = 0;
+  const rainbowColors = ['violet', 'indigo', 'blue', 'green', 'yellow', 'orange', 'red'];
+  
+  rainbowInterval = setInterval(() => {
+    thermometer.style.background = rainbowColors[rainbowIndex];
+    mercury.style.backgroundColor = rainbowColors[rainbowIndex];
+    rainbowIndex = (rainbowIndex + 1) % rainbowColors.length;
+  }, 1000);
+}
+
+function restartGame() {
+  fever = 38.5;
+  caresGiven = 0;
+  timeLeft = 120;
+  isRecovering = false;
+  isGameFinished = false;
+  
+  clearInterval(timerInterval);
+  clearInterval(recoveryAnimationInterval);
+  clearInterval(rainbowInterval);
+  
+  document.body.style.backgroundColor = '#f0f8ff';
+  document.querySelector('.thermometer').style.background = 'linear-gradient(to top, #4ecdc4 0%, #ff6b6b 100%)';
+  document.getElementById('mercury').style.backgroundColor = '#ff6b6b';
+  document.getElementById('getWellAgainButton').style.display = 'none';
+  
+  updateStats();
+  document.getElementById('time').textContent = '2:00';
+  
+  showToast("Leon and Georgia need your help again! Let's beat the fever one more time!");
+}
+
+updateStats();
+</script>
+</body></html>
